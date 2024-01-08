@@ -1,0 +1,8 @@
+{
+    "private": true,
+    "workspaces": {
+        "packages": [
+            "modules/c2p9-impl"
+        ]
+    }
+}
