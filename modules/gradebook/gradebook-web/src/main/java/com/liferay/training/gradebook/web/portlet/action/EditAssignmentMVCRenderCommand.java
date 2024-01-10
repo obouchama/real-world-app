@@ -6,7 +6,6 @@ import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.training.gradebook.exception.NoSuchAssignmentException;
 import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.service.AssignmentService;
 import com.liferay.training.gradebook.web.constants.GradebookPortletKeys;
@@ -26,42 +25,40 @@ import static com.liferay.training.gradebook.constants.GradebookConstants.ASSIGN
  * @author Otmane.Bouchama
  */
 @Component(
-	immediate = true, 
-	property = { 
-		"javax.portlet.name=" + GradebookPortletKeys.GRADEBOOK,
-		"mvc.command.name=" + MVCCommandNames.EDIT_ASSIGNMENT 
-	}, 
-	service = MVCRenderCommand.class
+        immediate = true,
+        property = {
+                "javax.portlet.name=" + GradebookPortletKeys.GRADEBOOK,
+                "mvc.command.name=" + MVCCommandNames.EDIT_ASSIGNMENT
+        },
+        service = MVCRenderCommand.class
 )
 public class EditAssignmentMVCRenderCommand implements MVCRenderCommand {
-	@Override
-	public String render(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException {
-		Assignment assignment = null;
-		long assignmentId = ParamUtil.getLong(renderRequest, ASSIGNMENT_ID, 0);
-		if (assignmentId > 0) {
-			try {
-				// Call the service to get the assignment for editing.
-				assignment = _assignmentService.getAssignment(assignmentId);
-			} catch (NoSuchAssignmentException nsae) {
-				nsae.printStackTrace();
-			} catch (PortalException pe) {
-				pe.printStackTrace();
-			}
-		}
+    @Override
+    public String render(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException {
+        try {
+            long assignmentId = ParamUtil.getLong(renderRequest, ASSIGNMENT_ID, 0);
 
-		ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
-		// Set back icon visible.
-		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
-		portletDisplay.setShowBackIcon(true);
-		String redirect = renderRequest.getParameter("redirect");
-		portletDisplay.setURLBack(redirect);
+            // Call the service to get the assignment for editing.
+            Assignment assignment = _assignmentService.getAssignment(assignmentId);
 
-		// Set assignment to the request attributes.
-		renderRequest.setAttribute("assignment", assignment);
-		renderRequest.setAttribute("assignmentClass", Assignment.class);
-		return "/assignment/edit_assignments.jsp";
-	}
+            ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-	@Reference
-	private AssignmentService _assignmentService;
+            // Set back icon visible.
+            PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+            portletDisplay.setShowBackIcon(true);
+            String redirect = renderRequest.getRenderParameters().getValue("redirect");
+            portletDisplay.setURLBack(redirect);
+
+            // Set assignment to the request attributes.
+            renderRequest.setAttribute("assignment", assignment);
+            renderRequest.setAttribute("assignmentClass", Assignment.class);
+
+            return "/assignment/edit_assignments.jsp";
+        } catch (PortalException pe) {
+            throw new PortletException(pe);
+        }
+    }
+
+    @Reference
+    private AssignmentService _assignmentService;
 }

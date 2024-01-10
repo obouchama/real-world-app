@@ -56,11 +56,11 @@ public class EditAssignmentMVCActionCommand extends BaseMVCActionCommand {
         }  catch (AssignmentValidationException ave) {
             // Get error messages from the service layer.
             ave.getErrors().forEach(key -> SessionErrors.add(actionRequest, key));
-            actionResponse.setRenderParameter("mvcRenderCommandName", MVCCommandNames.EDIT_ASSIGNMENT);
+            actionResponse.getRenderParameters().setValue("mvcRenderCommandName", MVCCommandNames.EDIT_ASSIGNMENT);
         } catch (PortalException pe) {
             // Set error messages from the service layer.
             SessionErrors.add(actionRequest, "serviceErrorDetails");
-            actionResponse.setRenderParameter("mvcRenderCommandName", MVCCommandNames.EDIT_ASSIGNMENT);
+            actionResponse.getRenderParameters().setValue("mvcRenderCommandName", MVCCommandNames.EDIT_ASSIGNMENT);
         }
     }
 
